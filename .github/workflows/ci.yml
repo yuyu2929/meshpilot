@@ -10,7 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # macOS runner 在本账号下排队 15 分钟后被取消（0 步执行），
+        # 属于 runner 配额问题而非代码问题，故先不纳入矩阵。
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.11", "3.12"]
     runs-on: ${{ matrix.os }}
     env:
