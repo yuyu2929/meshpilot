@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.9", "3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+    env:
+      # 自检脚本会打中文；Windows runner 默认 cp1252 控制台会 UnicodeEncodeError
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[test]"
+      - run: pytest tests/ -q
+      - name: Demo smoke (all six sections)
+        run: python scripts/demo.py
+      - name: CLI smoke (module entry point)
+        run: |
+          python -m meshpilot demo
+          python -m meshpilot analyze --help
+      - name: Web app importable
+        run: python -c "import run_web; app = run_web.create_app(); print(type(app).__name__)"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - name: Build wheel and sdist
+        run: python -m build
+      - name: Check the wheel contains the web assets and public key
+        run: |
+          python - <<'PY'
+          import glob, zipfile
+          whl = glob.glob("dist/*.whl")[0]
+          names = zipfile.ZipFile(whl).namelist()
+          for must in ("meshpilot/license_public.pem", "meshpilot/webapp/static/index.html"):
+              assert any(n.endswith(must) for n in names), f"wheel 缺少 {must}"
+          print("wheel ok:", whl, len(names), "files")
+          PY

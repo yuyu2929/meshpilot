@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meshpilot"
+version = "0.1.0"
+description = "MeshPilot — agentic 3D asset optimisation: diagnose, prescribe, execute, verify. QEM decimation with topology and quality gates."
+readme = "README.md"
+requires-python = ">=3.9"
+# 双许可：个人与非营利组织用 PolyForm Noncommercial；任何营利使用需商业授权。
+# 这【不是】OSI 开源许可，对外请说 source-available，不要写 "open source"。
+# 说明：不在 [project] 里写 license 字段 —— 老版本 setuptools 要求它是字符串，
+# 新版本支持 PEP 639 的 license-files；为兼容两者，许可文件走 [tool.setuptools]。
+authors = [{ name = "yuyu2929" }]
+keywords = ["mesh", "decimation", "qem", "lod", "3d", "optimization", "agent", "gltf"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Graphics :: 3D Modeling",
+    "License :: Other/Proprietary License",
+]
+dependencies = ["numpy>=1.22"]
+
+[project.optional-dependencies]
+web = ["fastapi>=0.100", "uvicorn[standard]>=0.23", "pydantic>=2.0", "httpx>=0.24"]
+license = ["cryptography>=41.0"]
+test = ["pytest>=7.0", "fastapi>=0.100", "pydantic>=2.0", "httpx>=0.24", "cryptography>=41.0"]
+all = [
+    "fastapi>=0.100", "uvicorn[standard]>=0.23", "pydantic>=2.0",
+    "httpx>=0.24", "cryptography>=41.0", "pytest>=7.0",
+]
+
+[project.scripts]
+meshpilot = "meshpilot.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yuyu2929/meshpilot"
+Issues = "https://github.com/yuyu2929/meshpilot/issues"
+
+[tool.setuptools]
+packages = ["meshpilot", "meshpilot.webapp", "meshpilot.enterprise"]
+license-files = ["LICENSE.md", "LICENSE-POLYFORM.md", "COMMERCIAL-LICENSE.md"]
+
+[tool.setuptools.package-data]
+meshpilot = ["webapp/static/*", "license_public.pem"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# 老版本 pytest 没有 pythonpath 选项时由 conftest.py 兜底
+pythonpath = ["."]

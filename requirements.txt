@@ -1,0 +1,13 @@
+# 核心算法仅依赖 numpy
+numpy>=1.22
+
+# Web 控制台（run_web.py）才需要
+fastapi>=0.100
+uvicorn[standard]>=0.23
+pydantic>=2.0
+
+# 许可证签发（scripts/gen_keys.py / issue_license.py）才需要
+cryptography>=41.0
+
+# 测试
+pytest>=7.0

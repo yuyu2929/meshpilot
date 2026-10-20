@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# 许可证私钥：绝不入库（公钥在 licensing.py 注释里，签发见 scripts/）
+keys/*.key
+keys/private*
+*.pem
+# 但公钥必须随仓库分发（企业版验签靠它），显式放行
+!meshpilot/license_public.pem
+
+# 操作系统与编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# 本地生成的测试资产
+*.tmp
+/tmp_assets/
+
+dist/
+build/
